@@ -1,0 +1,1031 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>مسابقه جدول ضرب</title>
+    <style>
+        /* ===== RESET ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Comic Sans MS', 'Chalkboard SE', 'Vazir', cursive, sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 50%, #4facfe 100%);
+            background-size: 400% 400%;
+            animation: bgShift 12s ease infinite;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 16px;
+            margin: 0;
+        }
+        @keyframes bgShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        .container {
+            width: 100%;
+            max-width: 720px;
+            background: rgba(255, 255, 255, 0.20);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            border-radius: 48px;
+            padding: 28px 24px 32px;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.30), 0 0 0 2px rgba(255, 255, 255, 0.25) inset;
+            position: relative;
+            overflow: hidden;
+        }
+        .screen {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            animation: fadeSlide 0.55s cubic-bezier(0.34, 1.56, 0.64, 1);
+            width: 100%;
+        }
+        .screen.active { display: flex; }
+        @keyframes fadeSlide {
+            0% { opacity: 0; transform: translateY(30px) scale(0.96); }
+            100% { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .start-title {
+            font-size: 2.6rem;
+            font-weight: 900;
+            color: #fff;
+            text-shadow: 0 6px 20px rgba(0, 0, 0, 0.30);
+            margin-bottom: 6px;
+            text-align: center;
+        }
+        .start-sub {
+            font-size: 1.1rem;
+            color: rgba(255, 255, 255, 0.85);
+            margin-bottom: 18px;
+            background: rgba(255, 255, 255, 0.15);
+            padding: 6px 20px;
+            border-radius: 40px;
+            backdrop-filter: blur(4px);
+        }
+        .start-emoji {
+            font-size: 4.2rem;
+            margin-bottom: 6px;
+            display: block;
+            animation: bounceEmoji 2s ease-in-out infinite;
+        }
+        @keyframes bounceEmoji {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-14px); }
+        }
+        .name-input-wrap {
+            width: 100%;
+            max-width: 340px;
+            margin: 8px 0 12px;
+        }
+        .name-input-wrap input {
+            width: 100%;
+            padding: 16px 22px;
+            border: none;
+            border-radius: 60px;
+            font-size: 1.2rem;
+            font-family: inherit;
+            background: rgba(255, 255, 255, 0.92);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.10);
+            text-align: center;
+            outline: 2px solid transparent;
+            transition: all 0.3s;
+            color: #333;
+            font-weight: 600;
+        }
+        .name-input-wrap input:focus {
+            outline: 2px solid #f5576c;
+            box-shadow: 0 8px 32px rgba(245, 87, 108, 0.30);
+            transform: scale(1.02);
+        }
+        .greeting {
+            font-size: 1.25rem;
+            color: #fff;
+            text-align: center;
+            line-height: 2;
+            background: rgba(255, 255, 255, 0.15);
+            padding: 14px 22px;
+            border-radius: 32px;
+            backdrop-filter: blur(6px);
+            margin: 6px 0 10px;
+            width: 100%;
+            max-width: 440px;
+            border: 1px solid rgba(255, 255, 255, 0.20);
+            min-height: 80px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .greeting .highlight {
+            color: #ffe66d;
+            font-weight: 900;
+            font-size: 1.4rem;
+        }
+        .teacher-credit {
+            font-size: 0.95rem;
+            color: rgba(255, 255, 255, 0.80);
+            margin: 8px 0 14px;
+            background: rgba(0, 0, 0, 0.15);
+            padding: 4px 18px;
+            border-radius: 30px;
+            backdrop-filter: blur(4px);
+        }
+        .btn {
+            border: none;
+            border-radius: 60px;
+            padding: 16px 44px;
+            font-size: 1.3rem;
+            font-weight: 800;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+            user-select: none;
+        }
+        .btn:active { transform: scale(0.94); }
+        .btn-primary {
+            background: linear-gradient(135deg, #f093fb, #f5576c);
+            color: #fff;
+            box-shadow: 0 8px 32px rgba(245, 87, 108, 0.40);
+        }
+        .btn-primary:hover {
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 0 14px 40px rgba(245, 87, 108, 0.50);
+        }
+        .btn-success {
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            color: #fff;
+        }
+        .btn-success:hover {
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 0 14px 40px rgba(46, 204, 113, 0.50);
+        }
+        .btn-warning {
+            background: linear-gradient(135deg, #f39c12, #e67e22);
+            color: #fff;
+        }
+        .btn-warning:hover {
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 0 14px 40px rgba(243, 156, 18, 0.50);
+        }
+        .btn-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: center;
+            margin-top: 10px;
+        }
+        .status-bar {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px 12px;
+            background: rgba(255, 255, 255, 0.18);
+            backdrop-filter: blur(10px);
+            border-radius: 40px;
+            padding: 10px 20px;
+            margin-bottom: 18px;
+            width: 100%;
+            border: 1px solid rgba(255, 255, 255, 0.20);
+        }
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: #fff;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+            background: rgba(0, 0, 0, 0.10);
+            padding: 2px 12px 2px 10px;
+            border-radius: 30px;
+            backdrop-filter: blur(4px);
+        }
+        .status-item .label { font-weight: 400; opacity: 0.75; font-size: 0.8rem; }
+        .status-item .value { font-weight: 900; font-size: 1.1rem; min-width: 18px; }
+        .status-item .value.score-val { color: #ffe66d; }
+        .status-item .value.life-val { color: #ff6b6b; }
+        .status-item .value.progress-val { color: #74b9ff; }
+        .status-item .value.qnum-val { color: #a29bfe; }
+        .timer-wrap {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(0, 0, 0, 0.20);
+            padding: 2px 14px 2px 10px;
+            border-radius: 30px;
+            backdrop-filter: blur(4px);
+        }
+        .timer-ring {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: conic-gradient(#ffe66d 0deg, rgba(255, 255, 255, 0.20) 0deg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            font-weight: 900;
+            color: #fff;
+            transition: background 0.1s;
+        }
+        .timer-ring .inner {
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            background: rgba(0, 0, 0, 0.30);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(4px);
+        }
+        .timer-ring.warning {
+            background: conic-gradient(#ff6b6b 0deg, rgba(255, 255, 255, 0.20) 0deg);
+            animation: pulseTimer 0.5s ease-in-out infinite alternate;
+        }
+        @keyframes pulseTimer {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.08); }
+        }
+        .progress-track {
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.20);
+            border-radius: 20px;
+            margin-bottom: 18px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+        .progress-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #f093fb, #f5576c, #4facfe);
+            border-radius: 20px;
+            transition: width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: 0 0 20px rgba(245, 87, 108, 0.40);
+        }
+        .question-card {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(12px);
+            border-radius: 36px;
+            padding: 28px 24px 22px;
+            box-shadow: 0 16px 48px rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(255, 255, 255, 0.50) inset;
+            margin-bottom: 16px;
+            transition: all 0.4s ease;
+            animation: cardPop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        @keyframes cardPop {
+            0% { opacity: 0; transform: scale(0.92) rotateX(6deg); }
+            100% { opacity: 1; transform: scale(1) rotateX(0); }
+        }
+        .question-text {
+            font-size: 2.2rem;
+            font-weight: 900;
+            color: #2d3436;
+            text-align: center;
+            margin-bottom: 18px;
+            line-height: 1.4;
+        }
+        .question-text .q-emoji { font-size: 2rem; margin-left: 8px; }
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        @media (max-width: 460px) {
+            .options-grid { gap: 10px; }
+            .question-text { font-size: 1.7rem; }
+            .start-title { font-size: 2rem; }
+            .container { padding: 16px 14px 20px; border-radius: 32px; }
+            .status-bar { padding: 8px 12px; gap: 4px 8px; }
+            .status-item { font-size: 0.75rem; padding: 0 8px; }
+            .timer-ring { width: 28px; height: 28px; font-size: 0.7rem; }
+            .timer-ring .inner { width: 20px; height: 20px; }
+            .btn { padding: 12px 24px; font-size: 1rem; }
+            .question-card { padding: 18px 14px 16px; }
+        }
+        @media (max-width: 380px) {
+            .options-grid { gap: 8px; }
+            .question-text { font-size: 1.4rem; }
+            .status-item { font-size: 0.65rem; padding: 0 6px; }
+        }
+        .option-btn {
+            padding: 16px 8px;
+            border: none;
+            border-radius: 20px;
+            font-size: 1.3rem;
+            font-weight: 800;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+            background: rgba(240, 240, 255, 0.70);
+            color: #2d3436;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+            backdrop-filter: blur(4px);
+            border: 2px solid rgba(255, 255, 255, 0.60);
+            text-align: center;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .option-btn:hover:not(:disabled) {
+            transform: translateY(-3px) scale(1.03);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+            background: rgba(255, 255, 255, 0.90);
+        }
+        .option-btn:active:not(:disabled) { transform: scale(0.94); }
+        .option-btn:disabled {
+            cursor: not-allowed;
+            opacity: 0.7;
+            transform: scale(0.98);
+        }
+        .option-btn.correct {
+            background: #2ecc71 !important;
+            color: #fff !important;
+            border-color: #27ae60 !important;
+            transform: scale(1.04);
+            box-shadow: 0 0 40px rgba(46, 204, 113, 0.50);
+        }
+        .option-btn.wrong {
+            background: #ff6b6b !important;
+            color: #fff !important;
+            border-color: #e74c3c !important;
+            animation: shake 0.4s ease;
+        }
+        .option-btn.show-correct {
+            background: #2ecc71 !important;
+            color: #fff !important;
+            border-color: #27ae60 !important;
+            opacity: 0.85;
+        }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20% { transform: translateX(-12px); }
+            40% { transform: translateX(12px); }
+            60% { transform: translateX(-8px); }
+            80% { transform: translateX(8px); }
+        }
+        .feedback-msg {
+            text-align: center;
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-top: 14px;
+            padding: 10px 16px;
+            border-radius: 30px;
+            min-height: 52px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.3s;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(4px);
+            color: #fff;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.10);
+        }
+        .feedback-msg.success {
+            background: rgba(46, 204, 113, 0.30);
+            border: 1px solid rgba(46, 204, 113, 0.40);
+        }
+        .feedback-msg.error {
+            background: rgba(255, 107, 107, 0.30);
+            border: 1px solid rgba(255, 107, 107, 0.40);
+        }
+        .end-icon {
+            font-size: 5rem;
+            display: block;
+            margin-bottom: 4px;
+            animation: bounceEmoji 1.8s ease-in-out infinite;
+        }
+        .end-title {
+            font-size: 2.4rem;
+            font-weight: 900;
+            color: #fff;
+            text-shadow: 0 6px 24px rgba(0, 0, 0, 0.25);
+            text-align: center;
+            line-height: 1.3;
+        }
+        .end-title .highlight { color: #ffe66d; }
+        .end-sub {
+            font-size: 1.15rem;
+            color: rgba(255, 255, 255, 0.90);
+            text-align: center;
+            margin: 6px 0 10px;
+            background: rgba(255, 255, 255, 0.10);
+            padding: 8px 20px;
+            border-radius: 40px;
+            backdrop-filter: blur(4px);
+        }
+        .end-stats {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: center;
+            margin: 8px 0 12px;
+            width: 100%;
+        }
+        .end-stat {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(8px);
+            padding: 8px 18px;
+            border-radius: 30px;
+            color: #fff;
+            font-weight: 700;
+            font-size: 0.95rem;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+        .end-stat .num { font-weight: 900; font-size: 1.2rem; margin: 0 4px; }
+        .end-stat .num.green { color: #2ecc71; }
+        .end-stat .num.red { color: #ff6b6b; }
+        .end-stat .num.gold { color: #ffe66d; }
+        .best-record {
+            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.80);
+            background: rgba(0, 0, 0, 0.15);
+            padding: 4px 18px;
+            border-radius: 30px;
+            margin: 4px 0 10px;
+            backdrop-filter: blur(4px);
+        }
+        .best-record .num { font-weight: 900; color: #ffe66d; font-size: 1.2rem; }
+        #confettiCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9999;
+        }
+        .sound-toggle {
+            position: absolute;
+            top: 14px;
+            left: 14px;
+            background: rgba(255, 255, 255, 0.20);
+            backdrop-filter: blur(8px);
+            border: none;
+            border-radius: 50%;
+            width: 44px;
+            height: 44px;
+            font-size: 1.4rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: #fff;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.10);
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .sound-toggle:hover { transform: scale(1.10); background: rgba(255, 255, 255, 0.35); }
+        .star-burst {
+            position: fixed;
+            pointer-events: none;
+            z-index: 9998;
+            font-size: 2.2rem;
+            animation: starFly 0.9s ease-out forwards;
+        }
+        @keyframes starFly {
+            0% { opacity: 1; transform: translate(0, 0) scale(0.2) rotate(0deg); }
+            100% { opacity: 0; transform: translate(var(--tx), var(--ty)) scale(1.4) rotate(360deg); }
+        }
+        @media (max-width: 560px) {
+            .container { padding: 16px 12px 18px; border-radius: 28px; }
+            .start-title { font-size: 1.8rem; }
+            .greeting { font-size: 1rem; padding: 10px 14px; min-height: 60px; }
+            .question-text { font-size: 1.5rem; }
+            .option-btn { font-size: 1rem; padding: 12px 6px; min-height: 48px; border-radius: 16px; }
+            .btn { padding: 12px 22px; font-size: 0.95rem; }
+            .end-title { font-size: 1.8rem; }
+            .end-icon { font-size: 3.8rem; }
+            .status-item { font-size: 0.7rem; padding: 0 6px; }
+            .status-item .value { font-size: 0.9rem; }
+            .sound-toggle { width: 36px; height: 36px; font-size: 1.1rem; top: 10px; left: 10px; }
+            .feedback-msg { font-size: 1rem; min-height: 40px; padding: 6px 12px; }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="confettiCanvas"></canvas>
+    <div class="container" id="app">
+        <button class="sound-toggle" id="soundToggle">🔊</button>
+
+        <!-- START -->
+        <div class="screen active" id="startScreen">
+            <span class="start-emoji">🧮</span>
+            <h1 class="start-title">مسابقه جدول ضرب</h1>
+            <div class="start-sub">🌟 مرور ضرب ۶، ۷، ۸ و ۹</div>
+            <div class="name-input-wrap">
+                <input type="text" id="nameInput" placeholder="نام خود را وارد کن..." maxlength="20" autocomplete="off" />
+            </div>
+            <div class="greeting" id="greeting">
+                <span style="opacity:0.6; font-size:0.95rem;">👋 نامت را وارد کن تا شروع کنیم</span>
+            </div>
+            <div class="teacher-credit">👩‍🏫 آموزگار: نجمه ضعیفی</div>
+            <button class="btn btn-primary" id="startBtn">🚀 شروع بازی</button>
+        </div>
+
+        <!-- GAME -->
+        <div class="screen" id="gameScreen">
+            <div class="status-bar">
+                <div class="status-item"><span>🏆</span><span class="label">امتیاز</span><span class="value score-val" id="scoreDisplay">۰</span></div>
+                <div class="status-item"><span>❤️</span><span class="label">جان</span><span class="value life-val" id="lifeDisplay">۳</span></div>
+                <div class="status-item"><span>📊</span><span class="label">پیشرفت</span><span class="value progress-val" id="progressDisplay">۰٪</span></div>
+                <div class="status-item"><span>❓</span><span class="label">سؤال</span><span class="value qnum-val" id="qnumDisplay">۱ از ۲۰</span></div>
+                <div class="timer-wrap"><span>⏱</span><div class="timer-ring" id="timerRing"><div class="inner" id="timerInner">۱۰</div></div></div>
+            </div>
+            <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+            <div class="question-card" id="questionCard">
+                <div class="question-text" id="questionText"><span class="q-emoji">❓</span> ۶ × ۷ = ؟</div>
+                <div class="options-grid" id="optionsGrid">
+                    <button class="option-btn" data-index="0">۴۲</button>
+                    <button class="option-btn" data-index="1">۳۶</button>
+                    <button class="option-btn" data-index="2">۴۸</button>
+                    <button class="option-btn" data-index="3">۵۴</button>
+                </div>
+                <div class="feedback-msg" id="feedbackMsg">✨ پاسخ را انتخاب کن</div>
+            </div>
+        </div>
+
+        <!-- END -->
+        <div class="screen" id="endScreen">
+            <span class="end-icon" id="endIcon">🏆</span>
+            <h2 class="end-title" id="endTitle">تبریک <span class="highlight">علی</span>!</h2>
+            <div class="end-sub" id="endSub">تو قهرمان علوم شدی.</div>
+            <div class="end-stats">
+                <div class="end-stat">✅ صحیح: <span class="num green" id="endCorrect">۰</span></div>
+                <div class="end-stat">❌ غلط: <span class="num red" id="endWrong">۰</span></div>
+                <div class="end-stat">🏆 امتیاز: <span class="num gold" id="endScore">۰</span></div>
+            </div>
+            <div class="best-record" id="bestRecord">🏅 بهترین رکورد: <span class="num" id="bestScoreDisplay">۰</span></div>
+            <div class="teacher-credit" style="margin:4px 0 10px;">👩‍🏫 آموزگار: نجمه ضعیفی</div>
+            <div class="btn-group">
+                <button class="btn btn-success" id="restartBtn">🔄 بازی دوباره</button>
+                <button class="btn btn-warning" id="replayBtn">🔁 شروع مجدد</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            const $ = (id) => document.getElementById(id);
+            const startScreen = $('startScreen');
+            const gameScreen = $('gameScreen');
+            const endScreen = $('endScreen');
+            const nameInput = $('nameInput');
+            const greeting = $('greeting');
+            const startBtn = $('startBtn');
+            const soundToggle = $('soundToggle');
+            const scoreDisplay = $('scoreDisplay');
+            const lifeDisplay = $('lifeDisplay');
+            const progressDisplay = $('progressDisplay');
+            const qnumDisplay = $('qnumDisplay');
+            const timerRing = $('timerRing');
+            const timerInner = $('timerInner');
+            const progressFill = $('progressFill');
+            const questionText = $('questionText');
+            const optionsGrid = $('optionsGrid');
+            const feedbackMsg = $('feedbackMsg');
+            const questionCard = $('questionCard');
+            const endIcon = $('endIcon');
+            const endTitle = $('endTitle');
+            const endSub = $('endSub');
+            const endCorrect = $('endCorrect');
+            const endWrong = $('endWrong');
+            const endScore = $('endScore');
+            const bestScoreDisplay = $('bestScoreDisplay');
+            const bestRecord = $('bestRecord');
+            const restartBtn = $('restartBtn');
+            const replayBtn = $('replayBtn');
+            const confettiCanvas = $('confettiCanvas');
+            const ctx = confettiCanvas.getContext('2d');
+
+            let audioCtx = null;
+            let soundEnabled = true;
+
+            function initAudio() { if (!audioCtx) audioCtx = new(window.AudioContext || window.webkitAudioContext)(); return audioCtx; }
+
+            function playTone(freq, duration, type, volume) {
+                if (!soundEnabled) return;
+                try {
+                    const ctx = initAudio();
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.type = type || 'sine';
+                    osc.frequency.value = freq;
+                    gain.gain.setValueAtTime(volume || 0.18, ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+                    osc.start(ctx.currentTime);
+                    osc.stop(ctx.currentTime + duration);
+                } catch (_) {}
+            }
+
+            function playStartSound() { [523, 659, 784, 1047].forEach((f, i) => setTimeout(() => playTone(f, 0.18, 'sine', 0.15), i * 100)); }
+
+            function playClickSound() { playTone(800, 0.08, 'sine', 0.10); }
+
+            function playCorrectSound() { [523, 659, 784, 1047, 1319].forEach((f, i) => setTimeout(() => playTone(f, 0.12, 'sine', 0.14), i *
+                    80)); }
+
+            function playWrongSound() { [400, 350, 300, 250].forEach((f, i) => setTimeout(() => playTone(f, 0.15, 'sawtooth', 0.08), i *
+                    120)); }
+
+            function playEndSound(win) {
+                if (win) { [523, 659, 784, 1047, 1319, 1568].forEach((f, i) => setTimeout(() => playTone(f, 0.14, 'sine', 0.13),
+                    i * 100)); } else { [400, 350, 300, 250, 200].forEach((f, i) => setTimeout(() => playTone(f, 0.18,
+                        'sine', 0.10), i * 120)); }
+            }
+
+            function resizeCanvas() { confettiCanvas.width = window.innerWidth;
+                confettiCanvas.height = window.innerHeight; }
+            window.addEventListener('resize', resizeCanvas);
+            resizeCanvas();
+
+            let confettiPieces = [];
+            let confettiActive = false;
+            let confettiAnimId = null;
+
+            function spawnConfetti(count) {
+                const colors = ['#ff6b6b', '#f093fb', '#4facfe', '#ffe66d', '#2ecc71', '#fd79a8', '#a29bfe', '#fdcb6e'];
+                for (let i = 0; i < count; i++) {
+                    confettiPieces.push({
+                        x: Math.random() * confettiCanvas.width,
+                        y: -20 - Math.random() * 100,
+                        w: 6 + Math.random() * 10,
+                        h: 4 + Math.random() * 8,
+                        color: colors[Math.floor(Math.random() * colors.length)],
+                        vx: (Math.random() - 0.5) * 6,
+                        vy: 2 + Math.random() * 5,
+                        rot: Math.random() * 360,
+                        rotSpeed: (Math.random() - 0.5) * 10,
+                        life: 1,
+                        decay: 0.004 + Math.random() * 0.006,
+                    });
+                }
+                if (!confettiActive) { confettiActive = true;
+                    animateConfetti(); }
+            }
+
+            function animateConfetti() {
+                ctx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
+                let alive = false;
+                for (const p of confettiPieces) {
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    p.vy += 0.06;
+                    p.rot += p.rotSpeed;
+                    p.life -= p.decay;
+                    if (p.life > 0) {
+                        alive = true;
+                        ctx.save();
+                        ctx.translate(p.x, p.y);
+                        ctx.rotate((p.rot * Math.PI) / 180);
+                        ctx.globalAlpha = p.life;
+                        ctx.fillStyle = p.color;
+                        ctx.shadowColor = p.color;
+                        ctx.shadowBlur = 8;
+                        ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+                        ctx.restore();
+                    }
+                }
+                confettiPieces = confettiPieces.filter(p => p.life > 0);
+                if (alive || confettiPieces.length > 0) {
+                    confettiAnimId = requestAnimationFrame(animateConfetti);
+                } else {
+                    confettiActive = false;
+                    ctx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
+                    if (confettiAnimId) { cancelAnimationFrame(confettiAnimId);
+                        confettiAnimId = null; }
+                }
+            }
+
+            function stopConfetti() {
+                if (confettiAnimId) { cancelAnimationFrame(confettiAnimId);
+                    confettiAnimId = null; }
+                confettiPieces = [];
+                confettiActive = false;
+                ctx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
+            }
+
+            function spawnStars(x, y, count) {
+                const emojis = ['⭐', '🌟', '✨', '🎉', '💫', '🎊'];
+                for (let i = 0; i < count; i++) {
+                    const el = document.createElement('div');
+                    el.className = 'star-burst';
+                    el.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+                    const angle = Math.random() * 2 * Math.PI;
+                    const dist = 60 + Math.random() * 140;
+                    el.style.setProperty('--tx', Math.cos(angle) * dist + 'px');
+                    el.style.setProperty('--ty', Math.sin(angle) * dist - 60 + 'px');
+                    el.style.left = (x + (Math.random() - 0.5) * 30) + 'px';
+                    el.style.top = (y + (Math.random() - 0.5) * 30) + 'px';
+                    el.style.fontSize = (1.4 + Math.random() * 1.8) + 'rem';
+                    document.body.appendChild(el);
+                    setTimeout(() => el.remove(), 1000);
+                }
+            }
+
+            const state = {
+                name: '',
+                score: 0,
+                lives: 3,
+                currentQ: 0,
+                totalQ: 20,
+                correctCount: 0,
+                wrongCount: 0,
+                questions: [],
+                timer: 10,
+                timerInterval: null,
+                isAnswered: false,
+                gameOver: false,
+                bestScore: parseInt(localStorage.getItem('multiplicationBest') || '0'),
+            };
+
+            function generateQuestions() {
+                const tables = [6, 7, 8, 9];
+                const qs = [];
+                for (const t of tables) {
+                    const used = new Set();
+                    let attempts = 0;
+                    while (used.size < 5 && attempts < 100) {
+                        attempts++;
+                        const mult = Math.floor(Math.random() * 12) + 1;
+                        const key = t + 'x' + mult;
+                        if (!used.has(key)) {
+                            used.add(key);
+                            const answer = t * mult;
+                            const wrongs = new Set();
+                            wrongs.add(answer);
+                            let tries = 0;
+                            while (wrongs.size < 4 && tries < 100) {
+                                tries++;
+                                let offset = (Math.floor(Math.random() * 10) + 1) * (Math.random() > 0.5 ? 1 : -1);
+                                let w = answer + offset;
+                                if (w > 0 && w < 150 && !wrongs.has(w)) wrongs.add(w);
+                            }
+                            while (wrongs.size < 4) {
+                                let w = answer + (Math.floor(Math.random() * 20) + 1) * (Math.random() > 0.5 ? 1 : -1);
+                                if (w > 0 && w < 150 && !wrongs.has(w)) wrongs.add(w);
+                            }
+                            const options = Array.from(wrongs);
+                            for (let i = options.length - 1; i > 0; i--) {
+                                const j = Math.floor(Math.random() * (i + 1));
+                                [options[i], options[j]] = [options[j], options[i]];
+                            }
+                            const correctIndex = options.indexOf(answer);
+                            qs.push({
+                                table: t,
+                                mult: mult,
+                                answer: answer,
+                                options: options,
+                                correctIndex: correctIndex,
+                                text: `${t} × ${mult} = ؟`,
+                            });
+                        }
+                    }
+                }
+                for (let i = qs.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [qs[i], qs[j]] = [qs[j], qs[i]];
+                }
+                return qs;
+            }
+
+            function updateStatus() {
+                scoreDisplay.textContent = state.score;
+                lifeDisplay.textContent = state.lives;
+                const pct = Math.round((state.currentQ / state.totalQ) * 100);
+                progressDisplay.textContent = pct + '%';
+                progressFill.style.width = pct + '%';
+                qnumDisplay.textContent = `${Math.min(state.currentQ + 1, state.totalQ)} از ${state.totalQ}`;
+            }
+
+            function updateTimer() {
+                timerInner.textContent = state.timer;
+                const deg = (state.timer / 10) * 360;
+                timerRing.style.background =
+                    `conic-gradient(#ffe66d ${deg}deg, rgba(255,255,255,0.20) ${deg}deg)`;
+                if (state.timer <= 3) timerRing.classList.add('warning');
+                else timerRing.classList.remove('warning');
+            }
+
+            function showFeedback(msg, type) {
+                feedbackMsg.textContent = msg;
+                feedbackMsg.className = 'feedback-msg ' + (type || '');
+            }
+
+            function renderQuestion() {
+                const q = state.questions[state.currentQ];
+                if (!q) return;
+                questionText.innerHTML = `<span class="q-emoji">🔢</span> ${q.text}`;
+                const btns = optionsGrid.querySelectorAll('.option-btn');
+                btns.forEach((btn, i) => {
+                    btn.textContent = q.options[i] || '—';
+                    btn.className = 'option-btn';
+                    btn.disabled = false;
+                    btn.dataset.index = i;
+                });
+                showFeedback('✨ پاسخ را انتخاب کن', '');
+                questionCard.style.animation = 'none';
+                requestAnimationFrame(() => {
+                    questionCard.style.animation = 'cardPop 0.45s cubic-bezier(0.34, 1.56, 0.64, 1)';
+                });
+                state.timer = 10;
+                updateTimer();
+                state.isAnswered = false;
+                clearInterval(state.timerInterval);
+                state.timerInterval = setInterval(() => {
+                    state.timer -= 1;
+                    updateTimer();
+                    if (state.timer <= 0) {
+                        clearInterval(state.timerInterval);
+                        if (!state.isAnswered && !state.gameOver) handleTimeout();
+                    }
+                }, 1000);
+            }
+
+            function handleAnswer(index) {
+                if (state.isAnswered || state.gameOver) return;
+                state.isAnswered = true;
+                clearInterval(state.timerInterval);
+                const q = state.questions[state.currentQ];
+                const correct = index === q.correctIndex;
+                const btns = optionsGrid.querySelectorAll('.option-btn');
+                btns.forEach(b => b.disabled = true);
+                if (correct) {
+                    state.score += 1;
+                    state.correctCount += 1;
+                    btns[index].classList.add('correct');
+                    showFeedback(`🎉 آفرین ${state.name}، عالی بود!`, 'success');
+                    playCorrectSound();
+                    const rect = btns[index].getBoundingClientRect();
+                    spawnStars(rect.left + rect.width / 2, rect.top + rect.height / 2, 12);
+                    spawnConfetti(50);
+                } else {
+                    state.lives -= 1;
+                    state.wrongCount += 1;
+                    btns[index].classList.add('wrong');
+                    btns.forEach((b, i) => { if (i === q.correctIndex) b.classList.add('show-correct'); });
+                    showFeedback(`😅 اشکال ندارد، دوباره تلاش کن. پاسخ صحیح: ${q.options[q.correctIndex]}`, 'error');
+                    playWrongSound();
+                    if (state.lives <= 0) { state.lives = 0;
+                        updateStatus();
+                        endGame(); return; }
+                }
+                updateStatus();
+                setTimeout(() => {
+                    if (state.gameOver) return;
+                    state.currentQ += 1;
+                    if (state.currentQ >= state.totalQ) endGame();
+                    else { renderQuestion();
+                        updateStatus(); }
+                }, correct ? 1400 : 2000);
+            }
+
+            function handleTimeout() {
+                if (state.isAnswered || state.gameOver) return;
+                state.isAnswered = true;
+                const q = state.questions[state.currentQ];
+                state.lives -= 1;
+                state.wrongCount += 1;
+                const btns = optionsGrid.querySelectorAll('.option-btn');
+                btns.forEach(b => b.disabled = true);
+                btns.forEach((b, i) => { if (i === q.correctIndex) b.classList.add('show-correct'); });
+                showFeedback(`⏰ زمان تمام شد! پاسخ صحیح: ${q.options[q.correctIndex]}`, 'error');
+                playWrongSound();
+                updateStatus();
+                if (state.lives <= 0) { state.lives = 0;
+                    updateStatus();
+                    setTimeout(() => endGame(), 1000); return; }
+                setTimeout(() => {
+                    if (state.gameOver) return;
+                    state.currentQ += 1;
+                    if (state.currentQ >= state.totalQ) endGame();
+                    else { renderQuestion();
+                        updateStatus(); }
+                }, 1800);
+            }
+
+            function endGame() {
+                if (state.gameOver) return;
+                state.gameOver = true;
+                clearInterval(state.timerInterval);
+                stopConfetti();
+                const win = state.score >= 15;
+                const name = state.name || 'دانش‌آموز';
+                if (state.score > state.bestScore) {
+                    state.bestScore = state.score;
+                    localStorage.setItem('multiplicationBest', String(state.bestScore));
+                }
+                startScreen.classList.remove('active');
+                gameScreen.classList.remove('active');
+                endScreen.classList.add('active');
+                endIcon.textContent = win ? '🏆' : '❤️';
+                endTitle.innerHTML = win ?
+                    `تبریک <span class="highlight">${name}</span>!` :
+                    `${name} عزیز، تو می‌توانی بهتر از این باشی.`;
+                endSub.textContent = win ?
+                    '🌟 تو قهرمان علوم شدی. آموزگارت خانم ضعیفی از عملکردت خیلی راضی است.' :
+                    '🌸 دوباره امتحان کن. آموزگارت خانم ضعیفی به پیشرفتت ایمان دارد.';
+                endCorrect.textContent = state.correctCount;
+                endWrong.textContent = state.wrongCount;
+                endScore.textContent = state.score;
+                bestScoreDisplay.textContent = state.bestScore;
+                bestRecord.style.display = state.bestScore === 0 ? 'none' : 'block';
+                playEndSound(win);
+                if (win) { spawnConfetti(120);
+                    setTimeout(() => spawnConfetti(80), 600); }
+            }
+
+            function startGame(name) {
+                state.name = name || 'دانش‌آموز';
+                state.score = 0;
+                state.lives = 3;
+                state.currentQ = 0;
+                state.correctCount = 0;
+                state.wrongCount = 0;
+                state.gameOver = false;
+                state.isAnswered = false;
+                state.questions = generateQuestions();
+                startScreen.classList.remove('active');
+                endScreen.classList.remove('active');
+                gameScreen.classList.add('active');
+                updateStatus();
+                renderQuestion();
+                playStartSound();
+            }
+
+            function resetToStart() {
+                clearInterval(state.timerInterval);
+                stopConfetti();
+                state.gameOver = true;
+                startScreen.classList.add('active');
+                gameScreen.classList.remove('active');
+                endScreen.classList.remove('active');
+                const n = nameInput.value.trim() || 'دانش‌آموز';
+                greeting.innerHTML =
+                    `سلام <span class="highlight">${n}</span> 🌸<br>به مسابقه جدول ضرب خوش آمدی.<br>آماده‌ای قهرمان امروز باشی؟`;
+            }
+
+            nameInput.addEventListener('input', function() {
+                const n = this.value.trim() || 'دانش‌آموز';
+                greeting.innerHTML =
+                    `سلام <span class="highlight">${n}</span> 🌸<br>به مسابقه جدول ضرب خوش آمدی.<br>آماده‌ای قهرمان امروز باشی؟`;
+            });
+
+            window.addEventListener('DOMContentLoaded', function() {
+                const n = nameInput.value.trim() || 'دانش‌آموز';
+                greeting.innerHTML =
+                    `سلام <span class="highlight">${n}</span> 🌸<br>به مسابقه جدول ضرب خوش آمدی.<br>آماده‌ای قهرمان امروز باشی؟`;
+                soundToggle.textContent = soundEnabled ? '🔊' : '🔇';
+            });
+
+            startBtn.addEventListener('click', function() { playClickSound();
+                startGame(nameInput.value.trim() || 'دانش‌آموز'); });
+            nameInput.addEventListener('keydown', function(e) { if (e.key === 'Enter') { e.preventDefault();
+                    startBtn.click(); } });
+            optionsGrid.addEventListener('click', function(e) {
+                const btn = e.target.closest('.option-btn');
+                if (!btn || btn.disabled) return;
+                const idx = parseInt(btn.dataset.index);
+                if (!isNaN(idx)) { playClickSound();
+                    handleAnswer(idx); }
+            });
+            restartBtn.addEventListener('click', function() { playClickSound();
+                startGame(state.name || 'دانش‌آموز'); });
+            replayBtn.addEventListener('click', function() { playClickSound();
+                resetToStart(); });
+            soundToggle.addEventListener('click', function() {
+                soundEnabled = !soundEnabled;
+                soundToggle.textContent = soundEnabled ? '🔊' : '🔇';
+                if (soundEnabled) { initAudio();
+                    playClickSound(); }
+            });
+            document.addEventListener('keydown', function(e) {
+                if (gameScreen.classList.contains('active') && !state.gameOver) {
+                    const num = parseInt(e.key);
+                    if (num >= 1 && num <= 4) {
+                        const btns = optionsGrid.querySelectorAll('.option-btn');
+                        if (btns[num - 1] && !btns[num - 1].disabled) btns[num - 1].click();
+                    }
+                }
+                if (e.key === 'Enter' && startScreen.classList.contains('active')) startBtn.click();
+            });
+        })();
+    </script>
+</body>
+</html>
